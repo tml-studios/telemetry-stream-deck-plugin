@@ -1,0 +1,1 @@
+# telemetry-stream-deck-plugin
