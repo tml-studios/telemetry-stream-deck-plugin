@@ -1,0 +1,53 @@
+{
+	"SDKVersion": 2,
+	"Author": "TML Studios",
+	"CodePath": "app.html",
+	"Description": "Control our Games with your StreamDeck!",
+	"Name": "TML Telemetry",
+	"Icon": "actions/assets/Category",
+	"URL": "https://www.tml-studios.de/",
+	"Version": "1.0.0",
+	"Software": {
+		"MinimumVersion": "5.0"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "10.11"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Category": "TML Studios Telemetry",
+	"CategoryIcon": "actions/assets/Category",
+	"Actions": [
+		{
+			"Icon": "actions/assets/Icon_Button_Off",
+			"Name": "Door Button",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Button_Off"
+				}
+			],
+			
+			"Tooltip": "This is an example tooltip",
+			"UUID": "de.tml-studios.telemetry.dooraction",
+			"PropertyInspectorPath": "actions/property-inspector/doorbuttoninspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_Coin",
+			"Name": "Cash Change Button",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Coin"
+				}
+			],
+			
+			"Tooltip": "This is an example tooltip",
+			"UUID": "de.tml-studios.telemetry.changeaction",
+			"PropertyInspectorPath": "actions/property-inspector/changebuttoninspector.html"
+		}
+	]
+}
