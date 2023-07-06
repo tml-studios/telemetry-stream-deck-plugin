@@ -3,8 +3,8 @@ This plugin uses the telemetry interface of TML-Studios games Fernbus Simulator,
 
 ## Install the latest version:
 
-1. Download the repository
-2. Copy the "de.tml-studios.telemetry.sdPlugin" folder into the plugin folder of the stream deck software: C:\Users\%YOUR_USER%\AppData\Roaming\Elgato\StreamDeck\Plugins
+1. Download the repository (Click on the green "Code" button and then on "DOWNLOAD ZIP")
+2. Copy the "de.tml-studios.telemetry.sdPlugin" folder (inside the src folder) into the plugin folder of the stream deck software: C:\Users\%YOUR_USER%\AppData\Roaming\Elgato\StreamDeck\Plugins
 3. restart the streamdeck software
 
 
