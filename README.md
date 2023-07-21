@@ -11,9 +11,9 @@ This plugin uses the telemetry interface of TML-Studios games Fernbus Simulator,
 ## Working Features:
 - [x] Cash Change System
 - [X] Door Control
+- [x] Gear Switch
 
 ## Todo:
-- [ ] Gear Switch
 - [ ] Light Switches
 - [ ] Other Function Buttons
 - if you have more ideas, let us know :)
