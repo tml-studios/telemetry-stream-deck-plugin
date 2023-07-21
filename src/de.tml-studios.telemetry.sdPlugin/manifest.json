@@ -32,7 +32,7 @@
 				}
 			],
 			
-			"Tooltip": "This is an example tooltip",
+			"Tooltip": "Controls the passenger doors.",
 			"UUID": "de.tml-studios.telemetry.dooraction",
 			"PropertyInspectorPath": "actions/property-inspector/doorbuttoninspector.html"
 		},
@@ -45,9 +45,22 @@
 				}
 			],
 			
-			"Tooltip": "This is an example tooltip",
+			"Tooltip": "Controls the cash system.",
 			"UUID": "de.tml-studios.telemetry.changeaction",
 			"PropertyInspectorPath": "actions/property-inspector/changebuttoninspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_N_Normal",
+			"Name": "Gear Selector",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_N_Normal"
+				}
+			],
+			
+			"Tooltip": "Controls the Gear Selector.",
+			"UUID": "de.tml-studios.telemetry.gearselect",
+			"PropertyInspectorPath": "actions/property-inspector/gearselectinspector.html"
 		}
 	]
 }
