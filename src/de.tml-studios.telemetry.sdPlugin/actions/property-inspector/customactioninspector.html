@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>de.tml-studios.telemetry Door Button Property Inspector</title>
+    <link rel="stylesheet" href="../../libs/css/sdpi.css" />
+</head>
+
+<body>
+    <!-- Global Settings -->
+    <div class="sdpi-wrapper">
+        <form id="property-inspector-global">
+            <div class="sdpi-item">
+                <div data-localize class="sdpi-item-label" title="TargetIp">Target IP</div>
+                <input id="TargetIp" data-localize class="sdpi-item-value" name="TargetIp" type="text" value="" placeholder="127.0.0.1" />
+            </div>
+            <div class="sdpi-item">
+                <div data-localize class="sdpi-item-label" title="TargetPort">Target Port</div>
+                <input id="TargetPort" data-localize class="sdpi-item-value" name="TargetPort" type="text" value="37337"/>
+            </div>
+        </form>
+        <div class="sdpi-item" type="line"></div>
+        <!-- Local Settings -->
+        <form id="property-inspector-local">
+            <div class="sdpi-item" id="TypeSelection">
+                <div class="sdpi-item-label">Select</div>
+                <select class="sdpi-item-value select" id="TypeSelection" name="TypeSelection" >
+                    <option selected="selected" value="Event">Event</option>
+                    <option value="Cmd">Command</option>
+                </select>
+            </div>
+            <div class="sdpi-item">
+                <div data-localize class="sdpi-item-label" title="Data">Custom Data</div>
+                <input id="CustomData" data-localize class="sdpi-item-value" name="CustomData" type="text" value="CustomData"/>
+            </div>
+        </form>
+    </div>
+
+    <div class="sdpi-info-label hidden" style="top: -1000" value=""></div>
+
+    <!-- Stream Deck Libs -->
+    <script src="../../libs/js/constants.js"></script>
+    <script src="../../libs/js/prototypes.js"></script>
+    <script src="../../libs/js/timers.js"></script>
+    <script src="../../libs/js/utils.js"></script>
+    <script src="../../libs/js/events.js"></script>
+    <script src="../../libs/js/api.js"></script>
+    <script src="../../libs/js/property-inspector.js"></script>
+    <script src="../../libs/js/dynamic-styles.js"></script>
+
+    <script>
+
+        $PI.onConnected((jsn) => {
+            const formGlobal = document.querySelector('#property-inspector-global');
+            const formLocal = document.querySelector('#property-inspector-local');
+            const {actionInfo, appInfo, connection, messageType, port, uuid} = jsn;
+            const {payload, context} = actionInfo;
+            const {settings} = payload;
+
+
+        Utils.setFormValue(settings, formLocal);
+
+        $PI.getGlobalSettings();
+
+            formGlobal.addEventListener( 'input', Utils.debounce(150, () => {
+                const value = Utils.getFormValue(formGlobal);
+                console.log('SetGlobalSettings', value);
+                $PI.setGlobalSettings(value);
+            })
+        );
+
+        formLocal.addEventListener('input', Utils.debounce(150, () => {
+            const value = Utils.getFormValue(formLocal);
+            $PI.setSettings(value);
+        })
+    );
+    });
+
+    $PI.onDidReceiveGlobalSettings(({payload}) => {
+        console.log('onDidReceiveGlobalSettings', payload);
+        document.getElementById("TargetIp").value = payload.settings.TargetIp;
+        document.getElementById("TargetPort").value = payload.settings.TargetPort;
+    })
+
+    </script>
+
+</body>
+
+</html>

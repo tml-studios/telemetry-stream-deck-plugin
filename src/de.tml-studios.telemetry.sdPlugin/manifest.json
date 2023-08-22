@@ -6,7 +6,7 @@
 	"Name": "TML Telemetry",
 	"Icon": "actions/assets/Category",
 	"URL": "https://www.tml-studios.de/",
-	"Version": "1.0.0",
+	"Version": "1.0.5",
 	"Software": {
 		"MinimumVersion": "5.0"
 	},
@@ -61,6 +61,71 @@
 			"Tooltip": "Controls the Gear Selector.",
 			"UUID": "de.tml-studios.telemetry.gearselect",
 			"PropertyInspectorPath": "actions/property-inspector/gearselectinspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_Brake_Off",
+			"Name": "Fixing Brake",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Brake_Off"
+				}
+			],
+			
+			"Tooltip": "Controls the FixingBrake",
+			"UUID": "de.tml-studios.telemetry.fixingbrake",
+			"PropertyInspectorPath": "actions/property-inspector/fixingbrakeinspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_Ignition",
+			"Name": "Ignition Control",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Ignition"
+				}
+			],
+			
+			"Tooltip": "Controls the Ignition.",
+			"UUID": "de.tml-studios.telemetry.ignition",
+			"PropertyInspectorPath": "actions/property-inspector/ignitioninspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_Custom",
+			"Name": "Custom Action",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Custom"
+				}
+			],
+			
+			"Tooltip": "Executes Custom Commands",
+			"UUID": "de.tml-studios.telemetry.customaction",
+			"PropertyInspectorPath": "actions/property-inspector/customactioninspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_SaleStatus",
+			"Name": "Ticket Sale Status",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_SaleStatus"
+				}
+			],
+			
+			"Tooltip": "Displays the Current Cash payment Status",
+			"UUID": "de.tml-studios.telemetry.paymentstatus",
+			"PropertyInspectorPath": "actions/property-inspector/paymentstatusinspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_Custom",
+			"Name": "Bus Start Options",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Custom"
+				}
+			],
+			
+			"Tooltip": "BusStartOptions",
+			"UUID": "de.tml-studios.telemetry.start",
+			"PropertyInspectorPath": "actions/property-inspector/startbuttoninspector.html"
 		}
 	]
 }
