@@ -3,15 +3,19 @@ This plugin uses the telemetry interface of TML-Studios games Fernbus Simulator,
 
 ## Install the latest version:
 
-1. Download the repository (Click on the green "Code" button and then on "DOWNLOAD ZIP")
-2. Copy the "de.tml-studios.telemetry.sdPlugin" folder (inside the src folder) into the plugin folder of the stream deck software: C:\Users\%YOUR_USER%\AppData\Roaming\Elgato\StreamDeck\Plugins
-3. restart the streamdeck software
+1. Download the packed plugin from the "release" folder.
+2. Open it, and the stream-deck software will start the automatic install.
 
 
 ## Working Features:
 - [x] Cash Change System
 - [X] Door Control
 - [x] Gear Switch
+- [X] Ignition
+- [X] Fxing Brake
+- [X] Custom Actions
+- [X] Ticket Sale Status
+- [X] Bus Start Optins (Quick Start)
 
 ## Todo:
 - [ ] Light Switches
