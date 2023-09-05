@@ -6,7 +6,7 @@
 	"Name": "TML Telemetry",
 	"Icon": "actions/assets/Category",
 	"URL": "https://www.tml-studios.de/",
-	"Version": "1.0.5",
+	"Version": "1.0.6",
 	"Software": {
 		"MinimumVersion": "5.0"
 	},

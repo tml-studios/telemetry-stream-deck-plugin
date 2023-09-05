@@ -80,7 +80,7 @@ async function CheckCurrentVehicle()
 		}
 		else
 		{
-			TargetUrl = "http://" + GlobalTargetAddress + ":" + GlobalTargetPort + "/vehicles/current"
+			TargetUrl = "http://" + GlobalTargetAddress + ":" + GlobalTargetPort + "/player"
 			fetchWithTimeout(TargetUrl, {timeout: 200})
 			.then(data => {
 				if(data.text == "Not in Bus")
@@ -89,13 +89,13 @@ async function CheckCurrentVehicle()
 				}
 				return data.json()
 			}).then(data => {
-				if(data == null)
+				if(data.Mode != "Vehicle")
 				{
 					CurrentVehicle =null;
 				}
 				else
 				{
-					CurrentVehicle = data.ActorName;
+					CurrentVehicle = data.CurrentVehicle;
 				}
 			})
 		}
@@ -273,11 +273,11 @@ function truncate(str, n)
 // Door Action Functions
 
 DoorAction.onKeyDown(({ action, context, device, event, payload }) => {
-	SendTelemetryAction("/setbutton?button=" + payload.settings.DoorSelect + "&state=1")
+	SendTelemetryAction("/setbutton?button=" + payload.settings.DoorSelector + "&state=1")
 });
 
 DoorAction.onKeyUp(({ action, context, device, event, payload }) => {
-	SendTelemetryAction("/setbutton?button=" + payload.settings.DoorSelect + "&state=0")
+	SendTelemetryAction("/setbutton?button=" + payload.settings.DoorSelector + "&state=0")
 });
 
 DoorAction.onWillAppear(({ action, context, device, event, payload }) =>
@@ -292,10 +292,10 @@ DoorAction.onWillDisappear(({ action, context, device, event, payload }) =>
 
 $SD.onDidReceiveSettings("de.tml-studios.telemetry.dooraction", ({context, payload}) => 
 {
-	DoorName = payload.settings.DoorSelect
-	if(DoorName === undefined) DoorName = "Front Door";
+	DoorName = payload.settings.DoorSelector
+	if(DoorName === undefined) DoorName = "Door 1";
 
-	AddInterval(context, function() {UpdateButtonLightStatus(payload.settings.DoorSelect + " Light", context)})
+	AddInterval(context, function() {UpdateButtonLightStatus("ButtonLight " + payload.settings.DoorSelector, context)})
 	
 });
 
@@ -400,7 +400,7 @@ function GetCurrentGear()
 {
 	for(button in GlobalButtonData)
 	{
-		if(GlobalButtonData[button].Name == "Gears")
+		if(GlobalButtonData[button].Name == "GearSwitch")
 			return GlobalButtonData[button].State
 	}
 	return null
@@ -430,7 +430,7 @@ function SetGearswitchIcon(ButtonIndex, context)
 }
 
 GearSwitchAction.onKeyUp(({ action, context, device, event, payload }) => {
-	SendTelemetryAction("/setbutton?button=Gears&state=" + payload.settings.GearSelection)
+	SendTelemetryAction("/setbutton?button=GearSwitch&state=" + payload.settings.GearSelection)
 });
 
 GearSwitchAction.onWillAppear(({ action, context, device, event, payload }) =>
