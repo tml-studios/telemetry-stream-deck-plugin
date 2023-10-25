@@ -7,6 +7,13 @@ This plugin uses the telemetry interface of TML-Studios games Fernbus Simulator,
 2. Open it, and the stream-deck software will start the automatic install.
 
 
+## Connecting to a Game
+1. Make shure to enable the Telemetry setting and restart the game.
+2. In the StreamDeck software, buid your desired Layout and klick on one of the actions.
+3. Youll find two fields in the settings of each action: Target IP (default: 127.0.0.1) and Target Port (default: 37337).
+4. If the game and StreamDeck software are not running on the same Computer, you need to set the IP of the Computer running the Game as the Target IP.
+
+
 ## Working Features:
 - [x] Cash Change System
 - [X] Door Control
