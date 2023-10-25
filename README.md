@@ -23,6 +23,7 @@ This plugin uses the telemetry interface of TML-Studios games Fernbus Simulator,
 - [X] Custom Actions
 - [X] Ticket Sale Status
 - [X] Bus Start Optins (Quick Start)
+- [x] Indicators / Warninglight Button
 
 ## Todo:
 - [ ] Light Switches
