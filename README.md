@@ -3,7 +3,7 @@ This plugin uses the telemetry interface of TML-Studios games Fernbus Simulator,
 
 ## Install the latest version:
 
-1. Download the current release [here](https://github.com/tml-studios/telemetry-stream-deck-plugin/releases/tag/1.0.6).
+1. Download the current release [here](https://github.com/tml-studios/telemetry-stream-deck-plugin/releases/tag/1.0.7).
 2. Open it, and the stream-deck software will start the automatic install.
 
 
