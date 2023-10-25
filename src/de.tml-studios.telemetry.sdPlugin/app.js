@@ -9,6 +9,8 @@ const FixingBrakeAction = new Action("de.tml-studios.telemetry.fixingbrake");
 const CustomAction = new Action('de.tml-studios.telemetry.customaction');
 const SaleStatus = new Action('de.tml-studios.telemetry.paymentstatus');
 const StartOptionAction = new Action('de.tml-studios.telemetry.start');
+const ConnectionStatus = new Action('de.tml-studios.telemetry.constatus');
+const IndicatorControl = new Action('de.tml-studios.telemetry.indicatorcontrol');
 
 var GlobalTargetAddress = null
 var GlobalTargetPort = null
@@ -24,6 +26,7 @@ var CurrentVehicle = null;
 
 var SaleStatusRegister = {};
 var StartOptions = {};
+var failedConnectionCounter = 10;
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Global Functions
@@ -34,13 +37,22 @@ async function fetchWithTimeout(resource, options = {}) {
 	const controller = new AbortController();
 	const id = setTimeout(() => controller.abort(), timeout);
   
-	const response = await fetch(resource, {
-	  ...options,
-	  signal: controller.signal  
-	});
+	try
+	{
+		const response = await fetch(resource, {
+	  	...options,
+	  	signal: controller.signal  
+		});
 	clearTimeout(id);
-  
+	failedConnectionCounter = 0;
 	return response;
+	}
+	catch (e)
+	{
+		failedConnectionCounter += 1
+		if(failedConnectionCounter > 20)
+			failedConnectionCounter = 20;
+	}
 }
 
 async function CheckCurrentVehicle()
@@ -269,6 +281,30 @@ function truncate(str, n)
 	return (str.length > n) ? str.slice(0, n-2) + '...' : str;
 };
 
+
+function UpdateButtonIcon(LightName, OnIcon, OffIcon, context)
+{
+	if(LightName && OnIcon && OffIcon && context)
+	{
+		
+		if(GlobalCurrentState[context] != GlobalLampData[LightName])
+		{
+			GlobalCurrentState[context] = GlobalLampData[LightName]
+			NewState = GlobalLampData[LightName]
+			
+			if(NewState > 0.0)
+			{
+				$SD.setImage(context, "actions/assets/" + OnIcon);
+			}
+			else
+			{
+				$SD.setImage(context, "actions/assets/" + OffIcon);
+			}
+		}
+	}
+}
+
+
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Door Action Functions
 
@@ -293,7 +329,12 @@ DoorAction.onWillDisappear(({ action, context, device, event, payload }) =>
 $SD.onDidReceiveSettings("de.tml-studios.telemetry.dooraction", ({context, payload}) => 
 {
 	DoorName = payload.settings.DoorSelector
-	if(DoorName === undefined) DoorName = "Door 1";
+	if(DoorName === undefined) 
+	{
+		DoorName = "Door 1";
+		payload.settings.DoorSelector = "Door 1";
+		$SD.setSettings(context, payload.settings);
+	}
 
 	AddInterval(context, function() {UpdateButtonLightStatus("ButtonLight " + payload.settings.DoorSelector, context)})
 	
@@ -333,6 +374,11 @@ $SD.onDidReceiveSettings("de.tml-studios.telemetry.changeaction", ({context, pay
 {
 	console.log(payload)
 	var selected = payload.settings.CashChangeSelect
+	if(selected == undefined)
+	{
+		payload.settings.CashChangeSelect = "Coins5"
+		$SD.setSettings(context, payload.settings);
+	}
 	
 
 	if(payload.settings.hasOwnProperty("AutoLabel"))
@@ -448,7 +494,11 @@ $SD.onDidReceiveSettings("de.tml-studios.telemetry.gearselect", ({context, paylo
 	console.log(context);
 	var ButtonGear = payload.settings.GearSelection;
 	if(ButtonGear == undefined)
+	{
 		ButtonGear = 2;
+		payload.settings.GearSelection = 2;
+		$SD.setSettings(context, payload.settings);
+	}
 
 	AddInterval(context, function() {SetGearswitchIcon(ButtonGear, context)})
 	
@@ -514,6 +564,12 @@ CustomAction.onKeyUp(({ action, context, device, event, payload }) => {
 
 function SendCustomAction(payload, bIsPress)
 {
+	if(payload.settings.TypeSelection == undefined)
+	{
+		payload.settings.TypeSelection = "Event";
+		$SD.setSettings(context, payload.settings);
+	}
+
 	var ActionType = payload.settings.TypeSelection;
 	var Data = payload.settings.CustomData;
 
@@ -575,6 +631,7 @@ function SaleStatusChanged()
 			switch(curPayload.settings.DisplayType)
 			{
 				case "Ticket":
+				case undefined:
 					{
 						newTitle = "Ticket\n" + truncate(GlobalPaymentStatus.Ticket, 10) + "\n" + truncate(GlobalPaymentStatus.Zone, 10);
 						break;
@@ -641,6 +698,14 @@ StartOptionAction.onKeyDown(({ action, context, device, event, payload }) => {
 
 });
 
+$SD.onDidReceiveSettings("de.tml-studios.telemetry.start", ({context, payload}) => 
+{
+	if(payload.settings.StartOption === undefined)
+	{
+		payload.settings.StartOption = "BusName";
+		$SD.setSettings(context, payload.settings)
+	}
+});
 
 function SendStartCommand()
 {
@@ -659,3 +724,118 @@ function SendStartCommand()
 
 	SendTelemetryCommand(Command);
 }
+
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Connection Status
+
+ConnectionStatus.onWillAppear(({ action, context, device, event, payload }) =>
+{
+	AddInterval(context, function() {updateConnectionSatatus(context);});
+});
+
+ConnectionStatus.onWillDisappear(({ action, context, device, event, payload }) =>
+{
+	RemoveInterval(context);
+});
+
+
+
+function updateConnectionSatatus(context)
+{
+	image = "actions/assets/Icon_Error"
+	text = "Not\nConnected"
+
+	if(failedConnectionCounter < 10)
+	{
+		image = "actions/assets/Icon_Connected"
+		text = "Connected"
+		if(CurrentVehicle != null)
+		{
+			image = "actions/assets/Icon_Bus"
+			text = "In\nBus"
+		}
+	}
+
+	$SD.setImage(context, image);
+	$SD.setTitle(context, text);
+}
+
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Indicator Control
+
+IndicatorControl.onWillAppear(({ action, context, device, event, payload }) =>
+{
+	$SD.getSettings(context);
+
+});
+
+$SD.onDidReceiveSettings("de.tml-studios.telemetry.indicatorcontrol", ({context, payload}) => 
+{
+	var lightName = null;
+	var iconOn = null;
+	var iconOff = null;
+
+	if(payload.settings.IndicatorSelector === undefined)
+	{
+		payload.settings.IndicatorSelector = "IndicatorLeft";
+		$SD.setSettings(context, payload.settings);
+	}
+
+	switch(payload.settings.IndicatorSelector)
+	{
+		case "IndicatorLeft": 
+			lightName = "IndicatorLeft";
+			iconOff = "Icon_IndicatorLeftOff";
+			iconOn = "Icon_IndicatorLeftOn";
+			break;
+
+		case "IndicatorRight":
+			lightName = "IndicatorRight";
+			iconOff = "Icon_IndicatorRightOff";
+			iconOn = "Icon_IndicatorRightOn";
+			break;
+		
+		case "WarningLights":
+			lightName = "ButtonLight WarningLights";
+			iconOff = "Icon_WarningLightsOff";
+			iconOn = "Icon_WarningLightsOn";
+			break;
+	}
+	if(lightName && iconOff && iconOn)
+	{
+		GlobalCurrentState[context] = -1;
+		AddInterval(context, function() {UpdateButtonIcon(lightName, iconOn, iconOff, context) ;});
+	}
+});
+
+IndicatorControl.onWillDisappear(({ action, context, device, event, payload }) =>
+{
+	RemoveInterval(context);
+});
+
+IndicatorControl.onKeyDown(({ action, context, device, event, payload }) => 
+{
+	IndicatorAction = null
+	
+	switch(payload.settings.IndicatorSelector)
+	{
+		case "IndicatorLeft": 
+			IndicatorAction = "/sendevent?event=IndicatorDown";
+			break;
+
+		case "IndicatorRight":
+			IndicatorAction = "/sendevent?event=IndicatorUp";
+			break;
+		
+		case "WarningLights":
+			IndicatorAction = "/sendevent?event=ToggleWarningLights";
+			break;
+	}
+
+	if(IndicatorAction)
+	{
+		SendTelemetryAction(IndicatorAction);
+	}
+});

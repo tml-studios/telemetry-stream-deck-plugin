@@ -6,7 +6,7 @@
 	"Name": "TML Telemetry",
 	"Icon": "actions/assets/Category",
 	"URL": "https://www.tml-studios.de/",
-	"Version": "1.0.6",
+	"Version": "1.0.7",
 	"Software": {
 		"MinimumVersion": "5.0"
 	},
@@ -126,6 +126,32 @@
 			"Tooltip": "BusStartOptions",
 			"UUID": "de.tml-studios.telemetry.start",
 			"PropertyInspectorPath": "actions/property-inspector/startbuttoninspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_Connected",
+			"Name": "Connection Status",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Connected"
+				}
+			],
+			
+			"Tooltip": "Telemetry Connection Status Display",
+			"UUID": "de.tml-studios.telemetry.constatus",
+			"PropertyInspectorPath": "actions/property-inspector/connectionstatus.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_Indicator",
+			"Name": "Indicator Control",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Indicator"
+				}
+			],
+			
+			"Tooltip": "Controls Indicators and Warning Lights",
+			"UUID": "de.tml-studios.telemetry.indicatorcontrol",
+			"PropertyInspectorPath": "actions/property-inspector/indicatorcontrolinspector.html"
 		}
 	]
 }

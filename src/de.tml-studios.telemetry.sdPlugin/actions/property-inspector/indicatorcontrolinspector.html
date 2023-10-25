@@ -27,7 +27,16 @@
         </form>
         <div class="sdpi-item" type="line"></div>
         <!-- Local Settings -->
-        
+        <form id="property-inspector-local">
+            <div class="sdpi-item" id="IndicatorSelector">
+                <div class="sdpi-item-label">Select</div>
+                <select class="sdpi-item-value select" id="IndicatorSelector" name="IndicatorSelector" >
+                    <option value="IndicatorLeft">Indicator Left</option>
+                    <option value="IndicatorRight">Indicator Right</option>
+                    <option value="WarningLights">Warning Lights</option>
+                </select>
+            </div>
+        </form>
     </div>
 
     <div class="sdpi-info-label hidden" style="top: -1000" value=""></div>
@@ -44,12 +53,15 @@
 
     <script>
 
-    $PI.onConnected((jsn) => {
+        $PI.onConnected((jsn) => {
             const formGlobal = document.querySelector('#property-inspector-global');
+            const formLocal = document.querySelector('#property-inspector-local');
             const {actionInfo, appInfo, connection, messageType, port, uuid} = jsn;
             const {payload, context} = actionInfo;
             const {settings} = payload;
 
+
+        Utils.setFormValue(settings, formLocal);
 
         $PI.getGlobalSettings();
 
@@ -59,6 +71,12 @@
                 $PI.setGlobalSettings(value);
             })
         );
+
+        formLocal.addEventListener('input', Utils.debounce(150, () => {
+            const value = Utils.getFormValue(formLocal);
+            $PI.setSettings(value);
+        })
+    );
     });
 
     $PI.onDidReceiveGlobalSettings(({payload}) => {
