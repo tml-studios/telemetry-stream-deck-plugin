@@ -16,7 +16,7 @@ This plugin uses the telemetry interface of TML-Studios games Fernbus Simulator,
 
 ## Working Features:
 - [x] Cash Change System
-- [X] Door Control
+- [X] Door Control (now with door clearance control)
 - [x] Gear Switch
 - [X] Ignition
 - [X] Fxing Brake
@@ -24,6 +24,7 @@ This plugin uses the telemetry interface of TML-Studios games Fernbus Simulator,
 - [X] Ticket Sale Status
 - [X] Bus Start Optins (Quick Start)
 - [x] Indicators / Warninglight Button
+- [X] Cusrom Button (with custom feedback options)
 
 ## Todo:
 - [ ] Light Switches
