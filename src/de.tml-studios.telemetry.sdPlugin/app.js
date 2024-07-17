@@ -11,11 +11,13 @@ const SaleStatus = new Action('de.tml-studios.telemetry.paymentstatus');
 const StartOptionAction = new Action('de.tml-studios.telemetry.start');
 const ConnectionStatus = new Action('de.tml-studios.telemetry.constatus');
 const IndicatorControl = new Action('de.tml-studios.telemetry.indicatorcontrol');
+const CustomButtonAction = new Action('de.tml-studios.telemetry.custombutton');
 
 var GlobalTargetAddress = null
 var GlobalTargetPort = null
 var LastSendCommand = null
 
+var GlobalIconUpdateData = [];
 var GlobalInterval = [];
 var GlobalLampData = [];
 var GlobalButtonData = [];
@@ -27,6 +29,8 @@ var CurrentVehicle = null;
 var SaleStatusRegister = {};
 var StartOptions = {};
 var failedConnectionCounter = 10;
+
+
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Global Functions
@@ -192,16 +196,25 @@ function UpdateTelemetryData()
 			.then(data => {
 				GlobalLampData = data.AllLamps;
 				GlobalButtonData = data.Buttons;
+
+				// Update Sales
 				if(GlobalPaymentStatus != data.BusLogic.Sales)
 				{
 					GlobalPaymentStatus = data.BusLogic.Sales;
 					SaleStatusChanged();
 				}
+
+				// Update GEar
 				GlobalCurrentGear = GetCurrentGear();
 				if(data.IsPlayerControlled == "false")
 				{
 					CurrentVehicle = null;
 				}
+
+				//UpdateLamps
+				GlobalIconUpdateData.forEach(IconUpdate => {
+					UpdateIcon(IconUpdate.SourceType, IconUpdate.SourceName, IconUpdate.TargetValue, IconUpdate.OffIcon, IconUpdate.OnIcon, IconUpdate.Context);
+				});
 			})
 		}
 	}
@@ -281,26 +294,103 @@ function truncate(str, n)
 	return (str.length > n) ? str.slice(0, n-2) + '...' : str;
 };
 
+// UpdateIcon(IconUpdate.SourceType, IconUpdate.SourceName, IconUpdate.TargetValue, IconUpdate.OffIcon, IconUpdate.OnIcon, IconUpdate.Context);
+function AddIconUpdateData(SourceType, SourceName, SourceTargetValue, OffIcon, OnIcon, Context)
+{
+
+	if(GlobalInterval["LampDataUpdate"] === undefined)
+	{
+		GlobalInterval["LampDataUpdate"] = setInterval( function() {UpdateTelemetryData() }, 300);
+	}
+	if(GlobalInterval["CurrentVehicleUpdate"] === undefined)
+	{
+		GlobalInterval["CurrentVehicleUpdate"] = setInterval ( function() {CheckCurrentVehicle()}, 1000);
+	}
+
+	var newData = {};
+	newData["SourceType"] = SourceType;
+	newData["SourceName"] = SourceName;
+	newData["TargetValue"] = SourceTargetValue;
+	newData["OffIcon"] = OffIcon;
+	newData["OnIcon"] = OnIcon;
+	newData["Context"] = Context;
+
+	if(GlobalIconUpdateData.indexOf(newData) < 0)
+	{
+		GlobalIconUpdateData.push(newData);
+	}
+
+}
+
+function RemoveIconUpdateData(context)
+{
+	var removelist = [];
+	for (let i = 0; i < GlobalIconUpdateData.length; i++) {
+		const data = GlobalIconUpdateData[i];
+		console.log(data); 
+		if(data.Context == context)
+		{
+			removelist.push(i);
+		}
+	}
+
+	removelist.forEach(localIndex => {
+		delete GlobalIconUpdateData[localIndex];
+	});
+}
+
 
 function UpdateButtonIcon(LightName, OnIcon, OffIcon, context)
 {
 	if(LightName && OnIcon && OffIcon && context)
 	{
+		var onIcon = "actions/assets/" + OnIcon;
+		var offIcon = "actions/assets/" + OffIcon;
 		
-		if(GlobalCurrentState[context] != GlobalLampData[LightName])
-		{
-			GlobalCurrentState[context] = GlobalLampData[LightName]
-			NewState = GlobalLampData[LightName]
-			
-			if(NewState > 0.0)
+		UpdateIcon("light", LightName, "", offIcon, onIcon, context);
+	}
+}
+
+function UpdateIcon(SourceType, SourceName, SourceTargetValue, OffIcon, OnIcon, Context)
+{
+	if(!SourceType || !SourceName || !OffIcon || !OnIcon || !Context)
+	{
+		return;
+	}
+
+	switch(SourceType)
+	{
+		case "button":
+			if(SourceTargetValue)
 			{
-				$SD.setImage(context, "actions/assets/" + OnIcon);
+				GlobalButtonData.forEach(ButtonData => {
+					if(ButtonData.Name == SourceName && ButtonData.State != GlobalCurrentState[Context])
+					{
+						GlobalCurrentState[Context] = ButtonData.State;
+						if(ButtonData.State == SourceTargetValue)
+						{
+							$SD.setImage(Context, OnIcon);
+							return;
+						}
+						$SD.setImage(Context, OffIcon);
+						return;
+					}
+				});
 			}
-			else
+			break;
+		case "light":
+			if(GlobalLampData[SourceName] != GlobalCurrentState[Context])
 			{
-				$SD.setImage(context, "actions/assets/" + OffIcon);
+				GlobalCurrentState[Context] = GlobalLampData[SourceName];
+				if(GlobalLampData[SourceName] > 0.0)
+				{
+					$SD.setImage(Context, OnIcon);
+					return;
+				}
+				$SD.setImage(Context, OffIcon);
+				return;
 			}
-		}
+			break;
 	}
 }
 
@@ -309,10 +399,19 @@ function UpdateButtonIcon(LightName, OnIcon, OffIcon, context)
 // Door Action Functions
 
 DoorAction.onKeyDown(({ action, context, device, event, payload }) => {
+	if(payload.settings.DoorSelector  == "Clearance")
+	{
+		SendTelemetryAction("/sendevent?event=ToggleDoorClearance")
+		return;
+	}
 	SendTelemetryAction("/setbutton?button=" + payload.settings.DoorSelector + "&state=1")
 });
 
 DoorAction.onKeyUp(({ action, context, device, event, payload }) => {
+	if(payload.settings.DoorSelector  == "Clearance")
+	{
+		return;	
+	}
 	SendTelemetryAction("/setbutton?button=" + payload.settings.DoorSelector + "&state=0")
 });
 
@@ -335,7 +434,13 @@ $SD.onDidReceiveSettings("de.tml-studios.telemetry.dooraction", ({context, paylo
 		payload.settings.DoorSelector = "Door 1";
 		$SD.setSettings(context, payload.settings);
 	}
-
+	if(DoorName == "Clearance")
+	{
+		AddInterval(context, function() {UpdateButtonIcon("LED Clearance", "Icon_DoorClearance_On", "Icon_DoorClearance_Off", context)});
+		$SD.setImage(context, "actions/assets/Icon_DoorClearance_Off")
+		return;
+	}
+	$SD.setImage(context, "actions/assets/Icon_Button_Off")
 	AddInterval(context, function() {UpdateButtonLightStatus("ButtonLight " + payload.settings.DoorSelector, context)})
 	
 });
@@ -476,7 +581,7 @@ function SetGearswitchIcon(ButtonIndex, context)
 }
 
 GearSwitchAction.onKeyUp(({ action, context, device, event, payload }) => {
-	SendTelemetryAction("/setbutton?button=GearSwitch&state=" + payload.settings.GearSelection)
+	SendTelemetryAction("/setbutton?button=GearSwitch&state=" + (payload.settings.GearSelection - 1))
 });
 
 GearSwitchAction.onWillAppear(({ action, context, device, event, payload }) =>
@@ -839,3 +944,105 @@ IndicatorControl.onKeyDown(({ action, context, device, event, payload }) =>
 		SendTelemetryAction(IndicatorAction);
 	}
 });
+
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Custom Button
+CustomButtonAction.onWillAppear(({ action, context, device, event, payload }) =>
+{
+	$SD.getSettings(context);
+
+});
+
+$SD.onDidReceiveSettings("de.tml-studios.telemetry.custombutton", ({context, payload}) => 
+{
+	IconUpdate(context, payload);
+});
+
+CustomButtonAction.onWillDisappear(({ action, context, device, event, payload }) =>
+{
+	RemoveInterval(context);
+});
+
+CustomButtonAction.onKeyDown(({ action, context, device, event, payload }) => 
+{
+	SendCustomButtonAction(action, context, device, event, payload, true);
+});
+
+CustomButtonAction.onKeyUp(({ action, context, device, event, payload }) => 
+{
+	SendCustomButtonAction(action, context, device, event, payload, false);
+});
+
+function SendCustomButtonAction(action, context, device, event, payload, bPressed)
+{
+	switch(payload.settings.ButtonFunctionType)
+	{
+		case "button":
+			try
+			{
+				if(payload.settings.OnPressAction && bPressed)
+				{
+					data = JSON.parse(payload.settings.OnPressAction)
+					SendTelemetryAction("/setbutton?button=" + data.button + "&state=" + data.state)
+				}
+				if(payload.settings.OnReleaseAction && !bPressed)
+				{
+					data = JSON.parse(payload.settings.OnReleaseAction)
+					SendTelemetryAction("/setbutton?button=" + data.button + "&state=" + data.state)
+				}
+			}
+			catch
+			{
+			}
+			return;
+
+		case "event":
+			try
+			{
+				var sendeventtype = "/sendevent?event=";
+				var Data = payload.settings.OnReleaseAction;
+				if(payload.settings.OnPressAction && payload.settings.OnReleaseAction)
+				{
+					sendeventtype = "/sendeventrelease?event=";
+					if(bPressed)
+					{
+						sendeventtype = "/sendeventpress?event=";
+					}
+				}
+				if(bPressed)
+				{
+					Data = payload.settings.OnPressAction;
+				}
+				SendTelemetryAction(sendeventtype + Data);
+			}
+			catch
+			{
+			}
+			return;
+	}
+}
+
+function IconUpdate(context, payload)
+{
+	RemoveIconUpdateData(context);
+	if((payload.settings.DefaultIcon && !payload.settings.TrueIcon) || (payload.settings.DefaultIcon && payload.settings.ButtonFeedbackType == "off"))
+	{
+		$SD.setImage(context, payload.settings.DefaultIcon);
+		return;
+	}
+	if(payload.settings.DefaultIcon && payload.settings.TrueIcon && payload.settings.ButtonFeedbackType != "off" && payload.settings.SourceName)
+	{
+		var OffIcon = payload.settings.DefaultIcon;
+		var OnIcon = payload.settings.TrueIcon;
+		var FeedbackType = payload.settings.ButtonFeedbackType;
+		var SourceName = payload.settings.SourceName;
+		var TrueState = payload.settings.TrueState;
+
+		AddIconUpdateData(FeedbackType, SourceName, TrueState, OffIcon, OnIcon, context);
+		return;
+	}
+	
+	$SD.setImage(context, "actions/assets/Icon_Custom");
+	
+}

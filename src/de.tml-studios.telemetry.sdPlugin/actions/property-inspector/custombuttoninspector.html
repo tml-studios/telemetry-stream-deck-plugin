@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>de.tml-studios.telemetry Custom Button Property Inspector</title>
+    <link rel="stylesheet" href="../../libs/css/sdpi.css" />
+</head>
+
+<body>
+    <!-- Global Settings -->
+    <div class="sdpi-wrapper">
+        <form id="property-inspector-global">
+            <div class="sdpi-heading">Global Settings</div>
+            <div class="sdpi-item">
+                <div data-localize class="sdpi-item-label" title="TargetIp">Target IP</div>
+                <input id="TargetIp" data-localize class="sdpi-item-value" name="TargetIp" type="text" value="" placeholder="127.0.0.1" />
+            </div>
+            <div class="sdpi-item">
+                <div data-localize class="sdpi-item-label" title="TargetPort">Target Port</div>
+                <input id="TargetPort" data-localize class="sdpi-item-value" name="TargetPort" type="text" value="37337"/>
+            </div>
+        </form>
+        <!-- Local Settings -->
+        <form id="property-inspector-local">
+            <div class="sdpi-heading">Control Settings</div>
+            <div type="radio" class="sdpi-item" id="Function">
+                <div class="sdpi-item-label">Function</div>
+                <div class="sdpi-item-value ">
+                    <span class="sdpi-item-child">
+                        <input id="button" type="radio" value="button" name="ButtonFunctionType" >
+                        <label for="button" class="sdpi-item-label"><span></span>Button</label>
+                    </span>
+                    <span class="sdpi-item-child">
+                        <input id="event" type="radio" value="event" name="ButtonFunctionType" checked>
+                        <label for="event" class="sdpi-item-label"><span></span>Event</label>
+                    </span>
+                </div>
+            </div>
+            <div type="textarea" class="sdpi-item" id="ActionPress">
+                <div data-localize class="sdpi-item-label" title="OnPressAction">On Press</div>
+                <input id="OnPressActionData" data-localize class="sdpi-item-value" name="OnPressAction" type="text" placeholder='Event: MotorStartStop'/>
+            </div>
+            <div type="textarea" class="sdpi-item" id="ActionRelease">
+                <div data-localize class="sdpi-item-label" title="OnReleaseAction">On Release</div>
+                <input id="OnReleaseActionData" data-localize class="sdpi-item-value" name="OnReleaseAction" type="text" placeholder='Button: {"button":"GearSwitch", "state":"0"}'/>
+            </div>
+
+            <div class="sdpi-heading">Icon Settings</div>
+
+            <div type="radio" class="sdpi-item" id="FeedbackSourceType">
+                <div class="sdpi-item-label">Feedback Source</div>
+                <div class="sdpi-item-value">
+                    <span class="sdpi-item-child">
+                        <input id="off" type="radio" value="off" name="ButtonFeedbackType" >
+                        <label for="off" class="sdpi-item-label"><span></span>Off</label>
+                    </span>
+                    <span class="sdpi-item-child">
+                        <input id="buttonstate" type="radio" value="button" name="ButtonFeedbackType" checked>
+                        <label for="buttonstate" class="sdpi-item-label"><span></span>Button State</label>
+                    </span>
+                    <span class="sdpi-item-child">
+                        <input id="light" type="radio" value="light" name="ButtonFeedbackType" checked>
+                        <label for="light" class="sdpi-item-label"><span></span>Light State</label>
+                    </span>
+                </div>
+            </div>
+            <div type="textarea" class="sdpi-item" id="SourceName">
+                <div data-localize class="sdpi-item-label" title="SourceName">Source</div>
+                <input id="SourceName" data-localize class="sdpi-item-value" name="SourceName" type="text"/>
+            </div>
+            <div type="textarea" class="sdpi-item" id="TrueState">
+                <div data-localize class="sdpi-item-label" title="TrueState">True State</div>
+                <input id="TrueState" data-localize class="sdpi-item-value" name="TrueState" type="text"/>
+            </div>
+        </form>
+        <hr>
+        <form id="property-inspector-iconDefault">
+            <div class="sdpi-item" id="DefaultIconSelector">
+                <div class="sdpi-item-label">Default Icon</div>
+                <input class="sdpi-item-value" id="DefaultIcon" type="file" accept=".jpg, .jpeg, .png">
+            </div>
+            <div class="sdpi-item">
+                <div class="sdpi-item-label">Selected File</div>
+                <div class="sdpi-item-item" id="DefaultIconLabel">no file</div>
+            </div>
+        </form>
+        <form id="property-inspector-iconTrue">
+            <div class="sdpi-item" id="TrueIconSelector">
+                <div class="sdpi-item-label">True Icon</div>
+                <input class="sdpi-item-value" id="TrueIcon" type="file" accept=".jpg, .jpeg, .png">
+            </div>
+            <div class="sdpi-item">
+                <div class="sdpi-item-label">Selected File</div>
+                <div class="sdpi-item-item" id="TrueIconLabel">no file</div>
+            </div>
+
+
+        </form>
+    </div>
+
+    <div class="sdpi-info-label hidden" style="top: -1000" value=""></div>
+
+    <!-- Stream Deck Libs -->
+    <script src="../../libs/js/constants.js"></script>
+    <script src="../../libs/js/prototypes.js"></script>
+    <script src="../../libs/js/timers.js"></script>
+    <script src="../../libs/js/utils.js"></script>
+    <script src="../../libs/js/events.js"></script>
+    <script src="../../libs/js/api.js"></script>
+    <script src="../../libs/js/property-inspector.js"></script>
+    <script src="../../libs/js/dynamic-styles.js"></script>
+
+    <script>
+
+        var globalDefaultIcon = "";
+        var globalTrueIcon = "";
+
+        $PI.onConnected((jsn) => {
+            const formGlobal = document.querySelector('#property-inspector-global');
+            const formLocal = document.querySelector('#property-inspector-local');
+            const formLocalIconTrue = document.querySelector('#property-inspector-iconTrue');
+            const formLocalIconDefault = document.querySelector('#property-inspector-iconDefault');
+            const {actionInfo, appInfo, connection, messageType, port, uuid} = jsn;
+            const {payload, context} = actionInfo;
+            const {settings} = payload;
+
+
+        Utils.setFormValue(settings, formLocal);
+        console.log(settings);
+
+        if(settings["TrueIcon"] === undefined)
+        {
+            settings["TrueIcon"] = "";
+        }
+
+        if(settings["DefaultIcon"] === undefined)
+        {
+            settings["DefaultIcon"] = "";
+        }
+
+        globalTrueIcon = settings["TrueIcon"].toString();
+        globalDefaultIcon = settings["DefaultIcon"].toString();
+        document.getElementById("TrueIconLabel").textContent = makeFileLabel(globalTrueIcon);
+        document.getElementById("DefaultIconLabel").textContent = makeFileLabel(globalDefaultIcon);
+
+        function makeFileLabel(file)
+        {
+            if(file == "")
+            {
+                return("no file selected");
+            }
+
+            return(file.replace(/^.*[\\/]/, ''));
+        }
+
+        $PI.getGlobalSettings();
+
+            formGlobal.addEventListener( 'input', Utils.debounce(150, () => {
+                const value = Utils.getFormValue(formGlobal);
+                console.log('SetGlobalSettings', value);
+                $PI.setGlobalSettings(value);
+            })
+        );
+
+        formLocal.addEventListener('input', Utils.debounce(150, () => {
+            UpdateSettings();
+        }));
+
+        function UpdateSettings()
+        {
+            const value = Utils.getFormValue(formLocal);
+            
+            var TrueIconPath = document.getElementById("TrueIcon").value;
+            TrueIconPath = decodeURIComponent(TrueIconPath.replace(/^C:\\fakepath\\/, ''));
+            
+            value["TrueIcon"] = globalTrueIcon;
+            value["DefaultIcon"] = globalDefaultIcon;
+            
+            console.log(value);
+            $PI.setSettings(value);
+        }
+
+        formLocalIconDefault.addEventListener('input', Utils.debounce(150, () => {
+            var IconPath = document.getElementById("DefaultIcon").value;
+            globalDefaultIcon = decodeURIComponent(IconPath.replace(/^C:\\fakepath\\/, ''));
+            document.getElementById("DefaultIconLabel").textContent = makeFileLabel(globalDefaultIcon);
+            UpdateSettings();
+        }));
+
+        formLocalIconTrue.addEventListener('input', Utils.debounce(150, () => {
+            var IconPath = document.getElementById("TrueIcon").value;
+            globalTrueIcon = decodeURIComponent(IconPath.replace(/^C:\\fakepath\\/, ''));
+            document.getElementById("TrueIconLabel").textContent = makeFileLabel(globalTrueIcon);
+            UpdateSettings();
+        }));
+    });
+
+    $PI.onDidReceiveGlobalSettings(({payload}) => {
+        console.log('onDidReceiveGlobalSettings', payload);
+        document.getElementById("TargetIp").value = payload.settings.TargetIp;
+        document.getElementById("TargetPort").value = payload.settings.TargetPort;
+    })
+
+    </script>
+
+</body>
+
+</html>

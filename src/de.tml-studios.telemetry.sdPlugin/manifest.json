@@ -6,7 +6,7 @@
 	"Name": "TML Telemetry",
 	"Icon": "actions/assets/Category",
 	"URL": "https://www.tml-studios.de/",
-	"Version": "1.0.7",
+	"Version": "1.0.9",
 	"Software": {
 		"MinimumVersion": "5.0"
 	},
@@ -152,6 +152,19 @@
 			"Tooltip": "Controls Indicators and Warning Lights",
 			"UUID": "de.tml-studios.telemetry.indicatorcontrol",
 			"PropertyInspectorPath": "actions/property-inspector/indicatorcontrolinspector.html"
+		},
+		{
+			"Icon": "actions/assets/Icon_Custom",
+			"Name": "Universal Button",
+			"States": [
+				{
+					"Image": "actions/assets/Icon_Custom"
+				}
+			],
+			
+			"Tooltip": "Custom Button or Switch with feedback",
+			"UUID": "de.tml-studios.telemetry.custombutton",
+			"PropertyInspectorPath": "actions/property-inspector/custombuttoninspector.html"
 		}
 	]
 }
