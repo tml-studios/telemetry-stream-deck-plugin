@@ -1,5 +1,9 @@
+# Node.js
+node_modules/
+.vscode/
 
-BuildPlugin.bat
-DistributionTool.exe
-release/
-*.bak
+# Stream Deck files
+*.sdPlugin/bin
+*.sdPlugin/logs
+com.tml-edition-gmbh.the-bus-telemetry-controller.streamDeckPlugin
+.P4IGNORE

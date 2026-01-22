@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <title>Increment Counter Settings</title>
+    <meta charset="utf-8" />
+    <script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+</head>
+
+<body>
+    <!--
+        Learn more about property inspector components at https://sdpi-components.dev/docs/components
+    -->
+    <sdpi-item style="margin: 0px; margin-top: 30px;"><br>Global Settings</sdpi-item>
+    <sdpi-item label="Game IP">
+        <sdpi-textfield setting="globalTargetIP" global placeholder="127.0.0.1" maxlength="15" required></sdpi-textfield>
+    </sdpi-item>
+    <sdpi-item label="Game Port">
+        <sdpi-textfield setting="globalTargetPort" global placeholder="37337" maxlength="5" required></sdpi-textfield>
+    </sdpi-item>
+
+    <sdpi-item style="margin: 0px; margin-top: 30px;"><br>Button Settings</sdpi-item>
+
+    <sdpi-item label="Show Data">
+        <sdpi-radio setting="ActiveDebugFunction" default="Player" columns="2">
+            <option value="Player">Player</option>
+            <option value="Vehicle">Vehicle</option>
+        </sdpi-radio>
+    </sdpi-item>
+
+</body>
+
+</html>
