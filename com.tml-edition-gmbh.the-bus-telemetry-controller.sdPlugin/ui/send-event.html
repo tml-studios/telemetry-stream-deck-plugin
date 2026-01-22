@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <title>Increment Counter Settings</title>
+    <meta charset="utf-8" />
+    <script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+</head>
+
+<body>
+    <!--
+        Learn more about property inspector components at https://sdpi-components.dev/docs/components
+    -->
+    <sdpi-item style="margin: 0px; margin-top: 30px;"><br>Global Settings</sdpi-item>
+    <sdpi-item label="Game IP">
+        <sdpi-textfield setting="globalTargetIP" global placeholder="127.0.0.1" maxlength="15" required></sdpi-textfield>
+    </sdpi-item>
+    <sdpi-item label="Game Port">
+        <sdpi-textfield setting="globalTargetPort" global placeholder="37337" maxlength="5" required></sdpi-textfield>
+    </sdpi-item>
+
+    <sdpi-item style="margin: 0px; margin-top: 30px;"><br>Button Settings</sdpi-item>
+
+    <sdpi-item label="Label">
+        <sdpi-textfield setting="Label" placeholder="Button Label" required></sdpi-textfield>
+    </sdpi-item>
+
+    <sdpi-item label="Mode">
+        <sdpi-radio setting="EventMode" default="Event" columns="3">
+            <option value="Event">Event</option>
+            <option value="Command">Command</option>
+        </sdpi-radio>
+    </sdpi-item>
+
+    <sdpi-item label="Event">
+        <sdpi-textfield setting="Event" placeholder="Event Name" required></sdpi-textfield>
+    </sdpi-item>
+
+    <sdpi-item label="Monitoring">
+        <sdpi-radio setting="MonitoringMode" default="OFF" columns="3">
+            <option value="OFF">OFF</option>
+            <option value="Player">Player</option>
+            <option value="Vehicle">Vehicle</option>
+        </sdpi-radio>
+    </sdpi-item>
+
+    <sdpi-item label="Monitoring Path">
+        <sdpi-textfield setting="MonitoringPath" placeholder="Object to Monitor"></sdpi-textfield>
+    </sdpi-item>
+</body>
+
+</html>

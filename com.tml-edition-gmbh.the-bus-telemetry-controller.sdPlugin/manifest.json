@@ -1,0 +1,96 @@
+{
+	"Name": "The Bus Telemetry Interface",
+	"Version": "0.1.0.0",
+	"Author": "TML-Edition-GmbH",
+	"Actions": [
+		{
+			"Name": "Debug Functions <- Developer Stuff",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.debugfunctions",
+			"Icon": "imgs/actions/common/ActionIcon_Custom",
+			"Tooltip": "To make development a bit easier :)",
+			"PropertyInspectorPath": "ui/debugfunctions.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/common/BtnIcon_Custom",
+					"TitleAlignment": "middle",
+					"TitleColor": "#FF8800"
+				}
+			]
+		},
+		{
+			"Name": "Send Event <- Developer Stuff",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.send-event",
+			"Icon": "imgs/actions/common/ActionIcon_Custom",
+			"Tooltip": "Send an Event or Command",
+			"PropertyInspectorPath": "ui/send-event.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/common/BtnIcon_Custom",
+					"TitleAlignment": "bottom"
+				}
+			]
+		},
+		{
+			"Name": "Gearswitch",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.gearswitch",
+			"Icon": "imgs/actions/gearswitch/action_icon",
+			"Tooltip": "Gearswitch",
+			"PropertyInspectorPath": "ui/gearswitch.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/gearswitch/Icon_N_Normal",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Door Functions",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.doorfunctions",
+			"Icon": "imgs/actions/doorfunctions/ActionIcon_DoorFunctions",
+			"Tooltip": "Door Functions",
+			"PropertyInspectorPath": "ui/doorfunctions.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/doorfunctions/Icon_Button_Off",
+					"TitleAlignment": "middle"
+				}
+			]
+		}
+	],
+	"Category": "The Bus Telemetry Interface",
+	"CategoryIcon": "imgs/plugin/Category",
+	"CodePath": "bin/plugin.js",
+	"Description": "Control our game \"The Bus\" using the inbuild telemetry interface. Make shure, that the interface is enabled!",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 2,
+	"Software": {
+		"MinimumVersion": "6.5"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "12"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "20",
+		"Debug": "enabled"
+	},
+	"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller"
+}
