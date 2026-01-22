@@ -2,7 +2,7 @@
 
 > **Note:** This plugin has been completely remade. Not all features from previous versions are currently implemented.
 
-This plugin uses the telemetry interface of TML-Studios games — **Fernbus Simulator**, **Tourist Bus Simulator**, and **The Bus**—to control in-game functions via an Elgato Stream Deck.
+This plugin uses the telemetry interface of TML-Studios games - **Fernbus Simulator**, **Tourist Bus Simulator**, and **The Bus** - to control in-game functions via an Elgato Stream Deck.
 
 ---
 
