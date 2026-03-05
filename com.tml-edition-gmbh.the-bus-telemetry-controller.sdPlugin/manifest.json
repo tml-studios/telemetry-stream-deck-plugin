@@ -1,6 +1,6 @@
 {
 	"Name": "The Bus Telemetry Interface",
-	"Version": "0.1.0.0",
+	"Version": "0.2.0.2",
 	"Author": "TML-Edition-GmbH",
 	"Actions": [
 		{
@@ -67,6 +67,70 @@
 					"TitleAlignment": "middle"
 				}
 			]
+		},
+		{
+			"Name": "Indicator / Warning Lights",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.indicatorfunctions",
+			"Icon": "imgs/actions/indicators/Icon_Indicator",
+			"Tooltip": "Indicator Functions",
+			"PropertyInspectorPath": "ui/indicatorfunctions.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/indicators/Icon_Indicator",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Ignition",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.ignitionfunctions",
+			"Icon": "imgs/actions/ignition/ActionIcon_Ignition",
+			"Tooltip": "Ignition Functions",
+			"PropertyInspectorPath": "ui/ignitionfunctions.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/ignition/Icon_Ignition",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Fixing Brake",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.fixingbrakefunctions",
+			"Icon": "imgs/actions/fixingbrake/ActionIcon",
+			"Tooltip": "FixingBrake Functions",
+			"PropertyInspectorPath": "ui/ignitionfunctions.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/fixingbrake/ButtonIconOFF",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Universal Button",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.universalbuttonfunctions",
+			"Icon": "imgs/actions/common/ActionIcon_Custom",
+			"Tooltip": "Assign any Button of your bus",
+			"PropertyInspectorPath": "ui/universalbuttonfunctions.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/common/BtnIcon_Custom",
+					"TitleAlignment": "middle"
+				}
+			]
 		}
 	],
 	"Category": "The Bus Telemetry Interface",
@@ -74,9 +138,9 @@
 	"CodePath": "bin/plugin.js",
 	"Description": "Control our game \"The Bus\" using the inbuild telemetry interface. Make shure, that the interface is enabled!",
 	"Icon": "imgs/plugin/marketplace",
-	"SDKVersion": 2,
+	"SDKVersion": 3,
 	"Software": {
-		"MinimumVersion": "6.5"
+		"MinimumVersion": "7.2"
 	},
 	"OS": [
 		{

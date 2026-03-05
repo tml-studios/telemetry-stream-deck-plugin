@@ -17,6 +17,7 @@ export class DoorFunctions extends TML_Event_Base {
         super.onWillAppear(ev);
         const settings = ev.payload.settings;
         this.setSettings(settings, ev.action.id);
+        this.updateImage(settings.SelectedDoorFunction??"Door1", this.getAction(ev.action.id), false);
         TelemetryManager.instance.on("vehicle", this.getTelemetriePath(settings.SelectedDoorFunction??"Door1"), this.onTelemetrypdate, ev.action.id);
     }
 
@@ -39,7 +40,7 @@ export class DoorFunctions extends TML_Event_Base {
         TelemetryManager.instance.off("vehicle", this.getTelemetriePath(oldSettings.SelectedDoorFunction??"Door1"), ev.action.id);
         var cSettings = ev.payload.settings;
         this.setSettings(cSettings, ev.action.id);
-
+        this.updateImage(cSettings.SelectedDoorFunction??"Door1", this.getAction(ev.action.id), false);
         TelemetryManager.instance.on("vehicle", this.getTelemetriePath(cSettings.SelectedDoorFunction??"Door1"), this.onTelemetrypdate, ev.action.id);
     }
 
@@ -68,22 +69,22 @@ export class DoorFunctions extends TML_Event_Base {
     {
         switch (ActiveDoorFunction) {
             case "Door1":    
-                return "allLamps[Door Button 1]";
+                return "allLamps[ButtonLight Door 1]";
 
             case "Door2":    
-                return "allLamps[Door Button 2]";
+                return "allLamps[ButtonLight Door 2]";
 
             case "Door3":    
-                return "allLamps[Door Button 3]";
+                return "allLamps[ButtonLight Door 3]";
 
             case "Door4":    
-                return "allLamps[Door Button 4]";
+                return "allLamps[ButtonLight Door 4]";
 
             case "DoorClearance":    
                 return "buttons[Door Clearance].State";
 
             default:
-                return "allLamps[Door Button 1]";
+                return "allLamps[ButtonLight Door 1]";
         }
     }
 

@@ -18,6 +18,7 @@ export class GearSwitch extends TML_Event_Base {
 		super.onWillAppear(ev);
 		const settings = ev.payload.settings;
 		this.setSettings(settings, ev.action.id);
+		this.updateImage(settings.GearSelectorButton??"Drive", false, this.getAction(ev.action.id))
 		TelemetryManager.instance.on("vehicle", "buttons[Gear Selector].State", this.onTelemetrypdate, ev.action.id);
 	}
 
@@ -53,6 +54,7 @@ export class GearSwitch extends TML_Event_Base {
 
 		var Settings:GearEventSettings = ev.payload.settings;
 		this.setSettings(Settings, ev.action.id);
+		this.updateImage(Settings.GearSelectorButton??"Drive", false, this.getAction(ev.action.id))
 
 		TelemetryManager.instance.on("vehicle", "buttons[Gear Selector].State", this.onTelemetrypdate, ev.action.id);
 	}
