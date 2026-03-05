@@ -1,4 +1,4 @@
-import streamDeck, { LogLevel } from "@elgato/streamdeck";
+import streamDeck from "@elgato/streamdeck";
 
 import { TelemetryManager } from "./core/TelemetryManager";
 
@@ -6,6 +6,10 @@ import { SendEvent } from "./actions/send-event";
 import { GearSwitch } from "./actions/gearswitch";
 import { DebugFunctions } from "./actions/debugfunctions";
 import { DoorFunctions } from "./actions/doorfunctions";
+import { IndicatorFunctions } from "./actions/indicatorfunctions";
+import { IgnitionFunctions } from "./actions/ignition";
+import { FixingBrakeFunctions } from "./actions/fixingbarke";
+import { UniversalButtonFunctions } from "./actions/universalbuttonfunctions";
 
 streamDeck.logger.info("Startup");
 
@@ -29,13 +33,17 @@ function updateTelemetySettings(settings:any)
 }
 
 // We can enable "trace" logging so that all messages between the Stream Deck, and the plugin are recorded. When storing sensitive information
-streamDeck.logger.setLevel(LogLevel.TRACE);
+streamDeck.logger.setLevel("trace");
 
 // Register the increment action.
 streamDeck.actions.registerAction(new SendEvent());
 streamDeck.actions.registerAction(new GearSwitch());
 streamDeck.actions.registerAction(new DebugFunctions());
 streamDeck.actions.registerAction(new DoorFunctions());
+streamDeck.actions.registerAction(new IndicatorFunctions());
+streamDeck.actions.registerAction(new IgnitionFunctions());
+streamDeck.actions.registerAction(new FixingBrakeFunctions());
+streamDeck.actions.registerAction(new UniversalButtonFunctions());
  
 // Finally, connect to the Stream Deck. 
 streamDeck.connect();

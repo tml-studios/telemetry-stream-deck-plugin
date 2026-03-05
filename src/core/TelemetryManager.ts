@@ -1,6 +1,6 @@
 // core/TelemetryManager.ts
 import deepEqual from "fast-deep-equal"; // Optional: npm i fast-deep-equal
-import streamDeck, { action, Action, ActionContext, DialAction, KeyAction, LogLevel } from "@elgato/streamdeck";
+import streamDeck, { action, Action, ActionContext, DialAction, KeyAction } from "@elgato/streamdeck";
 import { json } from "stream/consumers";
 
 type TelemetryType = "player" | "vehicle";
@@ -33,12 +33,21 @@ interface Subscriber {
   actionId: string;
 }
 
+interface Button {
+  name: string;
+  CurrentState: string;
+  NextState: string;
+  PreviousState: string;
+  AvailableStates: string[];
+}
+
 export class TelemetryManager {
   private static _instance: TelemetryManager;
   private subscribers: Subscriber[] = [];
   private state: TelemetryRequestState = TelemetryRequestState.READY_FOR_PLAYER_REQUEST;
   private pollingInterval?: ReturnType<typeof setInterval>;
   private cache: Record<"player" | "vehicle", any> = { player: null, vehicle: null };
+  private ButtonCache: Record<string, Button> = {};
   private Inititialized: boolean = false;
   private currentVehicleId: string = "";
 
@@ -165,6 +174,7 @@ export class TelemetryManager {
       var vehicleData:any = await this.fetchJson("vehicle", this.currentVehicleId);
       // Normalize buttons: convert array → map by Name
       if (Array.isArray(vehicleData.Buttons)) {
+        this.processButtons(vehicleData.Buttons)
         const buttonMap: Record<string, any> = {};
         for (const btn of vehicleData.Buttons) {
           if (btn?.Name) buttonMap[btn.Name] = btn;
@@ -189,13 +199,13 @@ export class TelemetryManager {
       return;
     switch (mode) {
       case "press":
-        this.sendToTelemetrie(`vehicles/${this.currentVehicleId}/sendeventpress?event=${event}`);
+        this.sendToTelemetrie(`vehicles/${this.currentVehicleId}/sendeventpress?event=${event}`, true);
         break;
       case "release":
-        this.sendToTelemetrie(`vehicles/${this.currentVehicleId}/sendeventrelease?event=${event}`);
+        this.sendToTelemetrie(`vehicles/${this.currentVehicleId}/sendeventrelease?event=${event}`, true);
         break;
       case "push":
-        this.sendToTelemetrie(`vehicles/${this.currentVehicleId}/sendevent?event=${event}`);
+        this.sendToTelemetrie(`vehicles/${this.currentVehicleId}/sendevent?event=${event}`, true);
       default:
         break;
     }
@@ -205,6 +215,13 @@ export class TelemetryManager {
   {
     if(this.currentVehicleId)
       this.sendToTelemetrie(`command?Command=${command}`);
+  }
+
+  async setButton(button:string, state:string)
+  {
+    if(!this.currentVehicleId)
+      return;
+    this.sendToTelemetrie(`vehicles/${this.currentVehicleId}/setbutton?button=${button}&state=${state}`, true);
   }
 
   /** GET request to a REST endpoint */
@@ -219,11 +236,27 @@ export class TelemetryManager {
   }
 
   /** GET request to a REST endpoint */
-  private async sendToTelemetrie(payload: string) {
+  private async sendToTelemetrie(payload: string, ignoreError: boolean = false) {
     var url = `${this.baseUrl}/${payload}`
-    const res = await fetch(url);
-    streamDeck.logger.debug("[TelemetryManager] Sending:", url);
-    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.statusText}`);
+    try
+    {
+      const res = await fetch(url);
+      streamDeck.logger.debug("[TelemetryManager] Sending:", url);
+      if (!res.ok && !ignoreError) 
+        throw new Error(`Failed to fetch ${url}: ${res.statusText}`);
+    } 
+    catch (err) 
+    {
+      if (!ignoreError) 
+      {
+        throw err; // critical → bubble up
+      }
+      // non-critical → log and move on
+      streamDeck.logger.warn(
+        "[TelemetryManager] sendAndForget failed:",
+        err
+      );
+    }
   }
 
   /** Compare current and previous cache, and notify relevant subscribers */
@@ -264,4 +297,74 @@ export class TelemetryManager {
     }
     return current;
   }
+
+  private processButtons(buttonArray: any[]) {
+    for (const btn of buttonArray) {
+
+      // Skip buttons without states
+      if (!btn.States || btn.States.length === 0) {
+        continue;
+      }
+
+      const currentIndex = btn.States.indexOf(btn.State);
+
+      // If current state is not found, skip
+      if (currentIndex === -1) {
+        continue;
+      }
+
+      const nextIndex =
+        currentIndex === btn.States.length - 1 ? 0 : currentIndex + 1;
+
+      const previousIndex =
+        currentIndex === 0 ? btn.States.length - 1 : currentIndex - 1;
+
+      const newData: Button = {
+        name: btn.Name,
+        CurrentState: btn.State,
+        NextState: btn.States[nextIndex],
+        PreviousState: btn.States[previousIndex],
+        AvailableStates: btn.States,
+      };
+
+      this.ButtonCache[btn.Name] = newData;
+    }
+}
+
+cycleButtonState(button: string, ccw: boolean = false) {
+  const btn = this.ButtonCache[button];
+  if (!btn) return;
+
+  const newState = ccw ? btn.PreviousState : btn.NextState;
+
+  this.setButton(button, newState);
+}
+
+getAvailableButtonNames(): { value: string; label: string }[] {
+  return Object.keys(this.ButtonCache).map(name => ({
+    value: name,
+    label: name,
+  }));
+}
+
+getAvailableStateNames(button: string): { value: string; label: string }[] {
+  const buttonData = this.ButtonCache[button];
+
+  if (!buttonData?.AvailableStates) return [];
+
+  // Map the button states first
+  const stateOptions = buttonData.AvailableStates.map(state => ({
+    value: state,
+    label: state
+  }));
+
+  // Add the extra "cycle" options
+  stateOptions.push(
+    { value: "cw", label: "Cycle Clockwise" },
+    { value: "ccw", label: "Cycle Counterclockwise" }
+  );
+
+  return stateOptions;
+}
+  
 }
