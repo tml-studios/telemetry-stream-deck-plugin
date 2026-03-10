@@ -78,7 +78,7 @@ export class UniversalButtonFunctions extends TML_Event_Base {
         streamDeck.ui.sendToPropertyInspector(
                 {
                     event: "getStates",
-                    items: this.telemetryManager.getAvailableStateNames(Settings.SelectedButton),
+                    items: this.telemetryManager.getAvailableStateNames(Settings.SelectedButton??""),
                 } satisfies DataSourcePayload
             );
         this.telemetryManager.on("vehicle", `buttons[${Settings.SelectedButton}].State`, this.onTelemetrypdate, ev.action.id);

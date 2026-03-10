@@ -1,30 +1,47 @@
 {
 	"Name": "The Bus Telemetry Interface",
-	"Version": "0.2.0.2",
+	"Version": "0.2.0.3",
 	"Author": "TML-Edition-GmbH",
 	"Actions": [
 		{
-			"Name": "Debug Functions <- Developer Stuff",
-			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.debugfunctions",
-			"Icon": "imgs/actions/common/ActionIcon_Custom",
-			"Tooltip": "To make development a bit easier :)",
-			"PropertyInspectorPath": "ui/debugfunctions.html",
+			"Name": "Connection Status",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.connectionstatus",
+			"Icon": "imgs/actions/common/ActionIcon_Connection",
+			"Tooltip": "Displays the current connection status.",
+			"PropertyInspectorPath": "ui/fixingbrakefunctions.html",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "imgs/actions/common/BtnIcon_Custom",
+					"Image": "imgs/actions/common/BtnIcon_ConnectionFailed",
 					"TitleAlignment": "middle",
 					"TitleColor": "#FF8800"
 				}
 			]
 		},
 		{
-			"Name": "Send Event <- Developer Stuff",
+			"Name": "Raw API Data",
+			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.debugfunctions",
+			"Icon": "imgs/actions/common/ActionIcon_Connection",
+			"Tooltip": "Opens the current vehicle or player data inside your browser.",
+			"PropertyInspectorPath": "ui/debugfunctions.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/common/BtnIcon_Bus",
+					"TitleAlignment": "middle",
+					"TitleColor": "#FF8800"
+				}
+			]
+		},
+		{
+			"Name": "Send Event",
 			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.send-event",
 			"Icon": "imgs/actions/common/ActionIcon_Custom",
-			"Tooltip": "Send an Event or Command",
+			"Tooltip": "Send an event or command to the game.",
 			"PropertyInspectorPath": "ui/send-event.html",
 			"Controllers": [
 				"Keypad"
@@ -55,8 +72,8 @@
 		{
 			"Name": "Door Functions",
 			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.doorfunctions",
-			"Icon": "imgs/actions/doorfunctions/ActionIcon_DoorFunctions",
-			"Tooltip": "Door Functions",
+			"Icon": "imgs/actions/doorfunctions/ActionIcon_DoorFunctionsW",
+			"Tooltip": "Open/close doors and toogle door clearance.",
 			"PropertyInspectorPath": "ui/doorfunctions.html",
 			"Controllers": [
 				"Keypad"
@@ -72,7 +89,7 @@
 			"Name": "Indicator / Warning Lights",
 			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.indicatorfunctions",
 			"Icon": "imgs/actions/indicators/Icon_Indicator",
-			"Tooltip": "Indicator Functions",
+			"Tooltip": "Controls and displays indicators and warning lights",
 			"PropertyInspectorPath": "ui/indicatorfunctions.html",
 			"Controllers": [
 				"Keypad"
@@ -88,7 +105,7 @@
 			"Name": "Ignition",
 			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.ignitionfunctions",
 			"Icon": "imgs/actions/ignition/ActionIcon_Ignition",
-			"Tooltip": "Ignition Functions",
+			"Tooltip": "Press once to start the electronics, than press and hold to start the engine.",
 			"PropertyInspectorPath": "ui/ignitionfunctions.html",
 			"Controllers": [
 				"Keypad"
@@ -104,7 +121,7 @@
 			"Name": "Fixing Brake",
 			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.fixingbrakefunctions",
 			"Icon": "imgs/actions/fixingbrake/ActionIcon",
-			"Tooltip": "FixingBrake Functions",
+			"Tooltip": "Toggles ficing brake.",
 			"PropertyInspectorPath": "ui/ignitionfunctions.html",
 			"Controllers": [
 				"Keypad"
@@ -120,7 +137,7 @@
 			"Name": "Universal Button",
 			"UUID": "com.tml-edition-gmbh.the-bus-telemetry-controller.universalbuttonfunctions",
 			"Icon": "imgs/actions/common/ActionIcon_Custom",
-			"Tooltip": "Assign any Button of your bus",
+			"Tooltip": "Assign any Button of your bus - just select the button and the desired state from the drop down",
 			"PropertyInspectorPath": "ui/universalbuttonfunctions.html",
 			"Controllers": [
 				"Keypad"

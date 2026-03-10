@@ -1,6 +1,6 @@
-import streamDeck, {SingletonAction, WillAppearEvent, WillDisappearEvent,KeyDownEvent,KeyUpEvent,DidReceiveSettingsEvent,ActionContext,JsonObject, ActionService, DialAction, KeyAction} from "@elgato/streamdeck";
+import streamDeck, {SingletonAction, WillAppearEvent, WillDisappearEvent,KeyDownEvent,KeyUpEvent,DidReceiveSettingsEvent,ActionContext, ActionService, DialAction, KeyAction} from "@elgato/streamdeck";
 import { TelemetryManager, EventModeType, MonitoringType, getTelemetrieType } from "../core/TelemetryManager";
-
+import type {JsonObject,JsonPrimitive,JsonValue} from "@elgato/utils";
 
 export type TML_SettingsBase = JsonObject & {
   Label?: string;

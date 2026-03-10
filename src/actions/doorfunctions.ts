@@ -1,4 +1,5 @@
-import streamDeck, { Action, action, ActionContext, DialAction, KeyAction, KeyDownEvent, KeyUpEvent, SingletonAction, WillAppearEvent, WillDisappearEvent, type DidReceiveSettingsEvent, JsonObject} from "@elgato/streamdeck";
+import streamDeck, { Action, action, ActionContext, DialAction, KeyAction, KeyDownEvent, KeyUpEvent, SingletonAction, WillAppearEvent, WillDisappearEvent, type DidReceiveSettingsEvent} from "@elgato/streamdeck";
+import type {JsonObject,JsonPrimitive,JsonValue} from "@elgato/utils";
 import { TelemetryManager, EventModeType, MonitoringType, getTelemetrieType } from "../core/TelemetryManager";
 import { TML_Event_Base, TML_SettingsBase } from "../core/TML_ActionBase";
 
@@ -52,7 +53,7 @@ export class DoorFunctions extends TML_Event_Base {
         this.updateImage(cSettings.SelectedDoorFunction, thisAction, isActive);
     }
 
-    private updateImage(ActiveDoorFunction: DoorFunction, thisAction: DialAction<JsonObject> | KeyAction<JsonObject> | undefined, thisIsActive : boolean)
+    private updateImage(ActiveDoorFunction: DoorFunction, thisAction: KeyAction<JsonObject> | DialAction<JsonObject> | undefined, thisIsActive : boolean)
     {
         var imagePath = "imgs/actions/doorfunctions/Icon_Button_"
         if(ActiveDoorFunction == "DoorClearance")
@@ -62,7 +63,7 @@ export class DoorFunctions extends TML_Event_Base {
 
         if(!thisAction)
             return;
-        thisAction.setImage(imagePath);
+        thisAction?.setImage(imagePath);
     }
 
     private getTelemetriePath(ActiveDoorFunction: DoorFunction) : string
