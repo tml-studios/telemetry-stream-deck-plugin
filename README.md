@@ -8,7 +8,7 @@ This plugin uses the telemetry interface of TML-Studios games - **Fernbus Simula
 
 ## Installation
 
-1. Download the latest release from the [releases page](https://github.com/tml-studios/telemetry-stream-deck-plugin/releases/tag/2.0.2).
+1. Download the latest release from the [releases page](https://github.com/tml-studios/telemetry-stream-deck-plugin/releases/tag/2.0.3).
 2. Open the downloaded file. The Stream Deck software will automatically start the installation process.
 
 ---
@@ -26,6 +26,7 @@ This plugin uses the telemetry interface of TML-Studios games - **Fernbus Simula
 
 ## Implemented Features
 
+- Connection Status
 - Door control (including door clearance control)
 - Gear switching
 - Custom actions

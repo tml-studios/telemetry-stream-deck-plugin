@@ -1,6 +1,7 @@
-import streamDeck, { Action, action, ActionContext, DialAction, KeyAction, KeyDownEvent, KeyUpEvent, SingletonAction, WillAppearEvent, WillDisappearEvent, type DidReceiveSettingsEvent, JsonObject} from "@elgato/streamdeck";
+import streamDeck, { Action, action, ActionContext, DialAction, KeyAction, KeyDownEvent, KeyUpEvent, SingletonAction, WillAppearEvent, WillDisappearEvent, type DidReceiveSettingsEvent} from "@elgato/streamdeck";
 import { TelemetryManager, EventModeType, MonitoringType, getTelemetrieType } from "../core/TelemetryManager";
 import { TML_Event_Base, TML_SettingsBase } from "../core/TML_ActionBase";
+import type {JsonObject,JsonPrimitive,JsonValue} from "@elgato/utils";
 
 
 type GearSwitchMode = "Drive" | "Neutral" | "Reverse";

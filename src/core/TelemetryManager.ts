@@ -3,7 +3,7 @@ import deepEqual from "fast-deep-equal"; // Optional: npm i fast-deep-equal
 import streamDeck, { action, Action, ActionContext, DialAction, KeyAction } from "@elgato/streamdeck";
 import { json } from "stream/consumers";
 
-type TelemetryType = "player" | "vehicle";
+type TelemetryType = "player" | "vehicle" | "internal";
 type TelemetryCallback = (newValue: any, oldValue: any, action: string) => void;
 
 export type MonitoringType = "OFF" | "Player" | "Vehicle";
@@ -24,6 +24,14 @@ enum TelemetryRequestState {
   REQUESTING_PLAYER = "REQUESTING_PLAYER",
   READY_FOR_VEHICLE_REQUEST = "READY_FOR_VEHICLE_REQUEST",
   REQUESTING_VEHICLE = "REQUESTING_VEHICLE",
+  COOLDOWN_ACTIVE = "COOLDOWN_ACTIVE",
+  COOLDOWN_DONE = "COOLDOWN_DONE"
+}
+
+enum TelemetrieConnectionState {
+  NOT_CONNECTED = "NOT_CONNECTED",
+  PLAYER_ONLY = "PLAYER_ONLY",
+  CONNECTED = "CONNECTED"
 }
 
 interface Subscriber {
@@ -45,11 +53,16 @@ export class TelemetryManager {
   private static _instance: TelemetryManager;
   private subscribers: Subscriber[] = [];
   private state: TelemetryRequestState = TelemetryRequestState.READY_FOR_PLAYER_REQUEST;
+  private connectionState: TelemetrieConnectionState = TelemetrieConnectionState.NOT_CONNECTED;
   private pollingInterval?: ReturnType<typeof setInterval>;
-  private cache: Record<"player" | "vehicle", any> = { player: null, vehicle: null };
+  private cache: Record<"player" | "vehicle" | "internal", any> = { player: null, vehicle: null, internal: null };
   private ButtonCache: Record<string, Button> = {};
   private Inititialized: boolean = false;
   private currentVehicleId: string = "";
+
+  //// COOLDOWN SETTINGS
+  private CooldownTime = 1000.0; //ms
+  private CooldownStartTime = 0.0;
 
   private ip: string = "127.0.0.1";
   private port: number = 37337;
@@ -127,8 +140,16 @@ export class TelemetryManager {
     return `${this.baseUrl}/player`;
   }
 
+  private connectionChanged()
+  {
+    var connectionStateObject = {"ConnectionState":this.connectionState.toString()};
+    this.notifyIfChanged("internal", connectionStateObject, this.cache.internal);
+    this.cache.internal = connectionStateObject;
+  }
+
   /** Fetch player, then vehicle if applicable */
   private async updateLoop() {
+    var currentTime = Date.now();
     switch (this.state) {
       case TelemetryRequestState.READY_FOR_PLAYER_REQUEST:
         await this.requestPlayer();
@@ -142,6 +163,14 @@ export class TelemetryManager {
       case TelemetryRequestState.REQUESTING_VEHICLE:
       // Currently fetching — skip this tick
         break;
+      
+      case TelemetryRequestState.COOLDOWN_ACTIVE:
+        if(currentTime - this.CooldownStartTime >= this.CooldownTime)
+          this.state = TelemetryRequestState.COOLDOWN_DONE;
+        break;
+        
+      case TelemetryRequestState.COOLDOWN_DONE:
+        this.state = TelemetryRequestState.READY_FOR_PLAYER_REQUEST;
     }
   }
 
@@ -156,15 +185,22 @@ export class TelemetryManager {
       const vehicleId = playerData?.CurrentVehicle;
       if (vehicleId) {
         this.state = TelemetryRequestState.READY_FOR_VEHICLE_REQUEST;
-        this.currentVehicleId =vehicleId
+        this.currentVehicleId = vehicleId
+        this.connectionState = TelemetrieConnectionState.CONNECTED;
+        this.connectionChanged();
       } else {
         this.currentVehicleId = "";
         this.cache.vehicle = "";
         this.state = TelemetryRequestState.READY_FOR_PLAYER_REQUEST;
+        this.connectionState = TelemetrieConnectionState.PLAYER_ONLY;
+        this.connectionChanged();
       }
     } catch (err) {
       streamDeck.logger.error("[TelemetryManager] Player request failed:", err);
-      this.state = TelemetryRequestState.READY_FOR_PLAYER_REQUEST; // retry later
+      this.CooldownStartTime = Date.now();
+      this.state = TelemetryRequestState.COOLDOWN_ACTIVE; // retry later
+      this.connectionState = TelemetrieConnectionState.NOT_CONNECTED;
+      this.connectionChanged();
     }
   }
 

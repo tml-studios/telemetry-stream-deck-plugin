@@ -10,6 +10,7 @@ import { IndicatorFunctions } from "./actions/indicatorfunctions";
 import { IgnitionFunctions } from "./actions/ignition";
 import { FixingBrakeFunctions } from "./actions/fixingbarke";
 import { UniversalButtonFunctions } from "./actions/universalbuttonfunctions";
+import { ConnectionStateButton } from "./actions/connectionstatus";
 
 streamDeck.logger.info("Startup");
 
@@ -36,6 +37,7 @@ function updateTelemetySettings(settings:any)
 streamDeck.logger.setLevel("trace");
 
 // Register the increment action.
+streamDeck.actions.registerAction(new ConnectionStateButton());
 streamDeck.actions.registerAction(new SendEvent());
 streamDeck.actions.registerAction(new GearSwitch());
 streamDeck.actions.registerAction(new DebugFunctions());
